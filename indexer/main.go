@@ -1,15 +1,15 @@
 package main
 
 import (
-	"context"
-	"fmt"
+	"database/sql"
 	"log"
-	"math/big"
 
-	"github.com/ethereum/go-ethereum"
+	_ "github.com/mattn/go-sqlite3"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/spf13/viper"
+	"github.com/kilnfi/ublob/indexer/indexer"
 )
 
 func main() {
@@ -24,7 +24,7 @@ func main() {
 	ethereumNodeURL := viper.GetString("ethereumNodeURL")
 	contractAddress := viper.GetString("contractAddress")
 	topic0 := viper.GetString("topic0")
-	fromBlock := viper.GetInt64("fromBlock")
+	FromBlock := viper.GetInt64("fromBlock")
 
 	// Connect to the Ethereum node
 	client, err := ethclient.Dial(ethereumNodeURL)
@@ -36,17 +36,26 @@ func main() {
 	address := common.HexToAddress(contractAddress)
 	topicHash := common.HexToHash(topic0)
 
-	// Create a query to filter logs
-	logs, err := client.FilterLogs(context.Background(), ethereum.FilterQuery{
-		FromBlock: big.NewInt(fromBlock),
-		Addresses: []common.Address{address},
-		Topics:    [][]common.Hash{{topicHash}},
-	})
+	log.Printf("Listening for logs on contract %s, topic %s", address.Hex(), topicHash.Hex())
+	db, err := sql.Open("sqlite3", "./ethereum_logs.db")
 	if err != nil {
-		log.Fatalf("Failed to fetch logs: %v", err)
+		log.Fatalf("Failed to open database: %v", err)
+	}
+	defer db.Close()
+	indexer.RunMigration(db)
+
+	config := indexer.Config{
+		EthereumNodeURL: ethereumNodeURL,
+		ContractAddress: common.HexToAddress(contractAddress),
+		Topic0:          common.HexToHash(topic0),
+		FromBlock:       FromBlock,
+		Client:          client,
 	}
 
-	for _, vLog := range logs {
-		fmt.Println(vLog)
+	ind, err := indexer.NewIndexer(config)
+	if err != nil {
+		log.Fatalf("Failed to create indexer: %v", err)
 	}
+	ind.Run()
+	
 }
