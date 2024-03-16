@@ -19,7 +19,7 @@ function UBlobPage() {
             label="creation block"
             value={ublob.creation_block_number.toString()}
           />
-          <Value label="size" value={ublob.data.length.toString()} />
+          <Value label="size" value={`${ublob.data.length} bytes`} />
 
           <div className="mt-4">
             <label className="font-bold text-light-purple">data</label>
