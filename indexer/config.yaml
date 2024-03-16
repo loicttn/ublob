@@ -1,4 +1,4 @@
-ethereumNodeURL: "https://eth-sepolia.g.alchemy.com/v2/3KnIsNAvWnZzwKXkgb1L7w8YAVC9pUHn"
-contractAddress: "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9"
-topic0: "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
-fromBlock: 5497017
+ethereumNodeURL: "http://localhost:8545"
+# ethereumNodeURL: "https://eth-sepolia.g.alchemy.com/v2/<API_KEY>"
+contractAddress: "0xFD471836031dc5108809D173A067e8486B9047A3"
+fromBlock: 1152058

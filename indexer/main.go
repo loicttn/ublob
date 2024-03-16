@@ -1,15 +1,14 @@
 package main
 
 import (
-	"database/sql"
 	"log"
 
 	_ "github.com/mattn/go-sqlite3"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/spf13/viper"
 	"github.com/kilnfi/ublob/indexer/indexer"
+	"github.com/spf13/viper"
 )
 
 func main() {
@@ -23,7 +22,6 @@ func main() {
 	// Retrieve the configuration variables
 	ethereumNodeURL := viper.GetString("ethereumNodeURL")
 	contractAddress := viper.GetString("contractAddress")
-	topic0 := viper.GetString("topic0")
 	FromBlock := viper.GetInt64("fromBlock")
 
 	// Connect to the Ethereum node
@@ -34,20 +32,14 @@ func main() {
 
 	// Use the configuration variables
 	address := common.HexToAddress(contractAddress)
-	topicHash := common.HexToHash(topic0)
+	topicHash := common.HexToHash("0x1bbf55d483639f8103dc4e035af71a4fbdb16c80be740fa3eef81198acefa094")
 
 	log.Printf("Listening for logs on contract %s, topic %s", address.Hex(), topicHash.Hex())
-	db, err := sql.Open("sqlite3", "./ethereum_logs.db")
-	if err != nil {
-		log.Fatalf("Failed to open database: %v", err)
-	}
-	defer db.Close()
-	indexer.RunMigration(db)
 
 	config := indexer.Config{
 		EthereumNodeURL: ethereumNodeURL,
 		ContractAddress: common.HexToAddress(contractAddress),
-		Topic0:          common.HexToHash(topic0),
+		Topic0:          topicHash,
 		FromBlock:       FromBlock,
 		Client:          client,
 	}
@@ -57,5 +49,5 @@ func main() {
 		log.Fatalf("Failed to create indexer: %v", err)
 	}
 	ind.Run()
-	
+
 }
