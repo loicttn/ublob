@@ -78,7 +78,7 @@ func getCurrentBlockNumber(client *ethclient.Client, ctx context.Context) (int64
 
 func (i *Indexer) Run() {
 
-	ticker := time.NewTicker(20 * time.Second)
+	ticker := time.NewTicker(12 * time.Second)
 	defer ticker.Stop()
 
 	for {
@@ -89,7 +89,13 @@ func (i *Indexer) Run() {
 				log.Printf("Failed to get last block number: %v", err)
 				continue
 			}
-			if i.Config.FromBlock == fromBlock {
+			currentHeight, err := getCurrentBlockNumber(i.client, context.Background())
+			if err != nil {
+				log.Printf("Failed to get current block number: %v", err)
+				continue
+			}
+			if fromBlock >= currentHeight{
+				log.Printf("No new blocks to index")
 				continue
 			}
 			i.Config.FromBlock = fromBlock
@@ -103,10 +109,9 @@ func (i *Indexer) Run() {
 				err := insertLog(i.db, logEntry)
 				if err != nil {
 					log.Printf("Failed to insert log into database: %v", err)
-				} else {
-					fmt.Println("Log inserted into database successfully.")
 				}
 			}
+			log.Printf("Indexed %d logs", len(logs))
 		}
 	}
 }
