@@ -8,6 +8,6 @@ export function getUBlobSize(blob: UBlob): number {
   return blob.data.length + HEADER_SIZE;
 }
 
-export function getUBlobBid(blob: UBlob): number {
+export function getUBlobBidWei(blob: UBlob): number {
   return getUBlobSize(blob) * blob.max_wei_per_byte;
 }

@@ -1,12 +1,16 @@
-import { BLOB_SIZE, getUBlobBid, getUBlobSize } from "../utils/blob";
-import { generateRandomHead } from "../utils/mock";
+import { BLOB_SIZE, getUBlobBidWei, getUBlobSize } from "../utils/blob";
+import { generateRandomHead, getRandomString } from "../utils/mock";
 import { useQuery } from "@tanstack/react-query";
 
+const data = generateRandomHead();
+
 async function getPendingBids() {
-  const data = generateRandomHead();
+  for (let i = 0; i < data.ublobs.length; i++) {
+    data.ublobs[i].data = getRandomString(1000, 20000);
+  }
 
   // sort by highest bid
-  data.ublobs.sort((a, b) => getUBlobBid(b) - getUBlobBid(a));
+  data.ublobs.sort((a, b) => getUBlobBidWei(b) - getUBlobBidWei(a));
 
   const accepted_blobs = [];
   const pending_blobs = [];
@@ -18,15 +22,19 @@ async function getPendingBids() {
     } else {
       pending_blobs.push(blob);
     }
-    console.log(acc);
 
     acc += getUBlobSize(blob);
   }
+
+  const biggest_blob = data.ublobs[0];
+  const smallest_blob = data.ublobs.at(-1);
 
   return {
     all_blobs: data.ublobs,
     accepted_blobs,
     pending_blobs,
+    biggest_blob,
+    smallest_blob,
   };
 }
 
@@ -39,6 +47,6 @@ export default function useHead() {
     queryFn: getPendingBids,
 
     // poll every 500ms
-    refetchInterval: 500,
+    refetchInterval: 2000,
   });
 }

@@ -1,4 +1,4 @@
-import { Head, UBlob } from './api';
+import { Head, UBlob } from "./api";
 
 /**
  * Function to generate a random number between min and max.
@@ -24,11 +24,11 @@ const getRandomFloat = (min: number, max: number): number =>
  * @param max - The maximum length
  * @returns {string} - The random string
  */
-const getRandomString = (min: number, max: number): string => {
+export const getRandomString = (min: number, max: number): string => {
   const length = getRandomInt(min, max);
   const arr = new Uint8Array(length);
   window.crypto.getRandomValues(arr);
-  return arr.map((item) => item.toString(16).padStart(2, '0')).join('');
+  return arr.map((item) => +item.toString(16).padStart(2, "0")).join("");
 };
 
 /**
@@ -36,8 +36,8 @@ const getRandomString = (min: number, max: number): string => {
  * @returns {UBlob} - random ublob data
  */
 export const generateRandomUBlob = (): UBlob => ({
-  id: getRandomInt(1, 10000),
-  data: getRandomString(100, 2000),
+  id: getRandomInt(100, 1000000),
+  data: getRandomString(1000, 20000),
   sender: getRandomString(20, 20),
   signature: getRandomString(100, 1000),
   max_wei_per_byte: getRandomInt(1, 10),
@@ -54,7 +54,7 @@ export const generateRandomUBlob = (): UBlob => ({
 export const generateRandomHead = (): Head => {
   const ublobs: UBlob[] = [];
 
-  for (let i = 0; i < getRandomInt(1, 42); i++) {
+  for (let i = 0; i < getRandomInt(20, 42); i++) {
     ublobs.push(generateRandomUBlob());
   }
 
