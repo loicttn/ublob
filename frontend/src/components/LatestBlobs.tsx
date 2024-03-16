@@ -1,9 +1,5 @@
-function  LatestBlobs() {
-
-    return (
-
-
-    )
+function LatestBlobs() {
+  return <></>;
 }
 
 export default LatestBlobs;

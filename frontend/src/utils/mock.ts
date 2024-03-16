@@ -1,4 +1,4 @@
-import { Head, UBlob } from "./api";
+import { Blob, Head, UBlob } from "./api";
 
 /**
  * Function to generate a random number between min and max.
@@ -45,6 +45,18 @@ export const generateRandomUBlob = (): UBlob => ({
   expiration_timestamp: getRandomInt(1000000, 10000000),
   creation_timestamp: getRandomInt(100000, 1000000),
   creation_block_number: getRandomInt(1000, 5000),
+});
+
+/**
+ * Generate a random blob value.
+ * @returns {UBlob} - random ublob data
+ */
+export const generateRandomBlob = (): Blob => ({
+  hash: getRandomString(20, 20),
+  timestamp: getRandomInt(100000, 1000000),
+  ublobs: Array.from({ length: getRandomInt(20, 42) }, () =>
+    generateRandomUBlob()
+  ),
 });
 
 /**

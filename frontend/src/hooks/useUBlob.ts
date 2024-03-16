@@ -6,7 +6,7 @@ import { generateRandomUBlob } from '../utils/mock';
  */
 export default function useUBlob(id: number) {
   return useQuery({
-    queryKey: ['ublob', id],
+    queryKey: ['blob', id],
     queryFn: () => generateRandomUBlob(/** id */),
   });
 }
