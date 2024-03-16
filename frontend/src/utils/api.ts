@@ -1,13 +1,13 @@
 /*-------------------------------- CONSTANTS --------------------------------*/
 
-const API = "http://localhost:8000/api";
+const API = 'http://localhost:8000/api';
 
 /*--------------------------------- ERRORS ----------------------------------*/
 
 class NetworkError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = "NetworkError";
+    this.name = 'NetworkError';
   }
 }
 
@@ -17,6 +17,8 @@ export type Blob = {
   ublobs: UBlob[];
   hash: string;
   timestamp: number;
+  fee: number;
+  filled: number; // out of 100%
 };
 
 export type UBlob = {
@@ -51,7 +53,7 @@ export type Head = {
  */
 export const getHead = async (): Promise<Head> => {
   const res = await fetch(`${API}/v1/head`, {
-    method: "GET",
+    method: 'GET',
   });
 
   if (!res.ok) {
@@ -68,7 +70,7 @@ export const getHead = async (): Promise<Head> => {
  */
 export const getUBlob = async (id: number): Promise<UBlob> => {
   const res = await fetch(`${API}/v1/ublob/${id}`, {
-    method: "GET",
+    method: 'GET',
   });
 
   if (!res.ok) {
@@ -85,7 +87,7 @@ export const getUBlob = async (id: number): Promise<UBlob> => {
  */
 export const getUBlobReceipt = async (id: number): Promise<UBlobReceipt> => {
   const res = await fetch(`${API}/v1/ublob_receipt/${id}`, {
-    method: "GET",
+    method: 'GET',
   });
 
   if (!res.ok) {
