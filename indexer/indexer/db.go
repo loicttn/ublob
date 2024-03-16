@@ -30,8 +30,11 @@ func insertLog(db *sql.DB, logEntry ethtypes.Log) error {
 }
 func (i *Indexer) getLastBlockNumber(db *sql.DB) (int64, error) {
 	var lastBlockNumber int64
-	err := db.QueryRow("SELECT MAX(blockNumber) FROM logs").Scan(&lastBlockNumber)
+	err := db.QueryRow("SELECT COALESCE(MAX(blockNumber), 0) FROM logs").Scan(&lastBlockNumber)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return i.Config.FromBlock, nil
+		}
 		return 0, err
 	}
 	if lastBlockNumber == 0 {
