@@ -3,9 +3,11 @@
 @tailwind utilities;
 
 html {
-  @apply font-mono;
+  @apply font-mono bg-violet;
+  scrollbar-width: thin;
+  scrollbar-color: #382d63 #120d24;
 }
 
 #root {
-  @apply min-h-dvh flex flex-col bg-violet;
+  @apply min-h-dvh flex flex-col;
 }
