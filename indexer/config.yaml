@@ -1,0 +1,4 @@
+ethereumNodeURL: "https://eth-sepolia.g.alchemy.com/v2/<API_KEY>"
+contractAddress: "CONTRACT_ADDRESS"
+topic0: "TOPIC_0"
+fromBlock: 5497017
