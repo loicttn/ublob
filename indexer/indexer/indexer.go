@@ -2,14 +2,17 @@ package indexer
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
 	"log"
+	"math/big"
+	"strings"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 
+	"github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
+	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
@@ -22,9 +25,9 @@ type Config struct {
 }
 
 type Indexer struct {
-	client *ethclient.Client
-	db     *sql.DB
-	Config Config
+	client          *ethclient.Client
+	Config          Config
+	CreditsRegistry CreditsRegistry
 }
 
 func NewIndexer(config Config) (*Indexer, error) {
@@ -33,39 +36,11 @@ func NewIndexer(config Config) (*Indexer, error) {
 		return nil, err
 	}
 
-	db, err := sql.Open("sqlite3", "./ethereum_logs.db")
-	if err != nil {
-		return nil, err
-	}
-
 	return &Indexer{
-		client: client,
-		db:     db,
-		Config: config,
+		client:          client,
+		Config:          config,
+		CreditsRegistry: NewCreditsRegistry(),
 	}, nil
-}
-
-func RunMigration(db *sql.DB) {
-	createTableSQL := `CREATE TABLE IF NOT EXISTS logs (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		blockNumber INTEGER,
-		"index" INTEGER,
-		data TEXT,
-		timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-	);`
-
-	statement, err := db.Prepare(createTableSQL)
-	if err != nil {
-		log.Fatalf("Failed to prepare migration: %v", err)
-	}
-	defer statement.Close()
-
-	_, err = statement.Exec()
-	if err != nil {
-		log.Fatalf("Failed to execute migration: %v", err)
-	}
-
-	fmt.Println("Migration ran successfully")
 }
 
 func getCurrentBlockNumber(client *ethclient.Client, ctx context.Context) (int64, error) {
@@ -76,15 +51,39 @@ func getCurrentBlockNumber(client *ethclient.Client, ctx context.Context) (int64
 	return header.Number.Int64(), nil
 }
 
+func (i *Indexer) FetchLogs() ([]ethtypes.Log, error) {
+	toblock, err := getCurrentBlockNumber(i.client, context.Background())
+	if err != nil {
+		return nil, err
+	}
+	toblock = toblock + 1
+
+	logs, err := i.client.FilterLogs(context.Background(), ethereum.FilterQuery{
+		FromBlock: big.NewInt(i.Config.FromBlock),
+		ToBlock:   big.NewInt(int64(toblock)),
+		Addresses: []common.Address{i.Config.ContractAddress},
+		Topics:    [][]common.Hash{{i.Config.Topic0}},
+	})
+	if err != nil {
+		return nil, err
+	}
+	return logs, nil
+}
+
 func (i *Indexer) Run() {
 
 	ticker := time.NewTicker(12 * time.Second)
 	defer ticker.Stop()
 
+	contractAbi, err := abi.JSON(strings.NewReader(`[{"type":"constructor","inputs":[{"name":"_receiver","type":"address","internalType":"address payable"}],"stateMutability":"nonpayable"},{"type":"receive","stateMutability":"payable"},{"type":"function","name":"receiver","inputs":[],"outputs":[{"name":"","type":"address","internalType":"address payable"}],"stateMutability":"view"},{"type":"event","name":"Credit","inputs":[{"name":"creditee","type":"address","indexed":true,"internalType":"address"},{"name":"amount","type":"uint256","indexed":false,"internalType":"uint256"}],"anonymous":false},{"type":"error","name":"Invalid","inputs":[]}]`))
+	if err != nil {
+		log.Fatal("Failed to parse ABI: ", err)
+	}
+
 	for {
 		select {
 		case <-ticker.C:
-			fromBlock, err := i.getLastBlockNumber(i.db)
+			fromBlock := i.Config.FromBlock
 			if err != nil {
 				log.Printf("Failed to get last block number: %v", err)
 				continue
@@ -94,7 +93,7 @@ func (i *Indexer) Run() {
 				log.Printf("Failed to get current block number: %v", err)
 				continue
 			}
-			if fromBlock >= currentHeight{
+			if fromBlock >= currentHeight {
 				log.Printf("No new blocks to index")
 				continue
 			}
@@ -106,10 +105,17 @@ func (i *Indexer) Run() {
 			}
 
 			for _, logEntry := range logs {
-				err := insertLog(i.db, logEntry)
+				var event CreditEvent
+
+				err := contractAbi.UnpackIntoInterface(&event, "Credit", logEntry.Data)
 				if err != nil {
-					log.Printf("Failed to insert log into database: %v", err)
+					log.Printf("Failed to unpack log data: %v", err)
+					continue
 				}
+				event.Creditee = common.HexToAddress(logEntry.Topics[1].Hex())
+				i.CreditsRegistry.AddCredit(event)
+
+				log.Printf("Event: %v", event)
 			}
 			log.Printf("Indexed %d logs", len(logs))
 		}
