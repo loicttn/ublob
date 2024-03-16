@@ -1,7 +1,9 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Layout from "./components/Layout";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Layout from './components/Layout';
+import { BlobPage } from './pages/Blob';
+import Home from './pages/Home';
+import { UBlobPage } from './pages/UBlob';
 
 const queryClient = new QueryClient();
 
@@ -12,6 +14,8 @@ function App() {
         <Routes>
           <Route Component={Layout}>
             <Route path="/" Component={Home} />
+            <Route path="/ublob/:id" Component={UBlobPage} />
+            <Route path="/blob/:id" Component={BlobPage} />
           </Route>
         </Routes>
       </BrowserRouter>
