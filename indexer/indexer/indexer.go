@@ -76,9 +76,8 @@ func getCurrentBlockNumber(client *ethclient.Client, ctx context.Context) (int64
 	return header.Number.Int64(), nil
 }
 
-func(i *Indexer) Run() {
-	
-	
+func (i *Indexer) Run() {
+
 	ticker := time.NewTicker(20 * time.Second)
 	defer ticker.Stop()
 
@@ -88,6 +87,9 @@ func(i *Indexer) Run() {
 			fromBlock, err := i.getLastBlockNumber(i.db)
 			if err != nil {
 				log.Printf("Failed to get last block number: %v", err)
+				continue
+			}
+			if i.Config.FromBlock == fromBlock {
 				continue
 			}
 			i.Config.FromBlock = fromBlock
