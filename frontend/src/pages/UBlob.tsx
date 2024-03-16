@@ -1,8 +1,8 @@
-import { useParams } from 'react-router';
-import Value from '../components/Value';
-import useUBlob from '../hooks/useUBlob';
+import { useParams } from "react-router";
+import Value from "../components/Value";
+import useUBlob from "../hooks/useUBlob";
 
-export const UBlobPage = () => {
+function UBlobPage() {
   const { id } = useParams();
   const { isLoading, data: ublob, error } = useUBlob(1);
 
@@ -13,20 +13,22 @@ export const UBlobPage = () => {
       {error && <p>Error: {error.message}</p>}
       {ublob && (
         <div className="flex flex-col text-sm">
-          <Value label="Owner" value={ublob.sender} />
-          <Value label="Byte Price" value={`${ublob.max_wei_per_byte} wei`} />
+          <Value label="owner" value={ublob.sender} />
+          <Value label="byte price" value={`${ublob.max_wei_per_byte} wei`} />
           <Value
-            label="Creation Block"
+            label="creation block"
             value={ublob.creation_block_number.toString()}
           />
-          <Value label="Size" value={ublob.data.length.toString()} />
+          <Value label="size" value={ublob.data.length.toString()} />
 
           <div className="mt-4">
-            <label className="font-bold text-light-purple">Data</label>
+            <label className="font-bold text-light-purple">data</label>
             <p className="mt-2 break-all">{ublob.data}</p>
           </div>
         </div>
       )}
     </div>
   );
-};
+}
+
+export default UBlobPage;

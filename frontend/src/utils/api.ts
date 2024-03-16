@@ -1,13 +1,13 @@
 /*-------------------------------- CONSTANTS --------------------------------*/
 
-const API = 'http://localhost:8000/api';
+const API = "http://localhost:8000/api";
 
 /*--------------------------------- ERRORS ----------------------------------*/
 
 class NetworkError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = 'NetworkError';
+    this.name = "NetworkError";
   }
 }
 
@@ -51,9 +51,9 @@ export type Head = {
  * Fetches the head of the ublob auction.
  * @returns {Promise<Head>} - The head of the ublob auction
  */
-export const getHead = async (): Promise<Head> => {
+export async function getHead(): Promise<Head> {
   const res = await fetch(`${API}/v1/head`, {
-    method: 'GET',
+    method: "GET",
   });
 
   if (!res.ok) {
@@ -61,16 +61,16 @@ export const getHead = async (): Promise<Head> => {
   }
 
   return res.json();
-};
+}
 
 /**
  * Fetches the ublob with the given id.
  * @param id ublob id
  * @returns {Promise<UBlob>} - The ublob with the given id
  */
-export const getUBlob = async (id: number): Promise<UBlob> => {
+export async function getUBlob(id: number): Promise<UBlob> {
   const res = await fetch(`${API}/v1/ublob/${id}`, {
-    method: 'GET',
+    method: "GET",
   });
 
   if (!res.ok) {
@@ -78,16 +78,16 @@ export const getUBlob = async (id: number): Promise<UBlob> => {
   }
 
   return res.json();
-};
+}
 
 /**
  * Fetches the ublob receipt with the given id.
  * @param id ublob receipt id
  * @returns {Promise<UBlobReceipt>} - The ublob receipt with the given id
  */
-export const getUBlobReceipt = async (id: number): Promise<UBlobReceipt> => {
+export async function getUBlobReceipt(id: number): Promise<UBlobReceipt> {
   const res = await fetch(`${API}/v1/ublob_receipt/${id}`, {
-    method: 'GET',
+    method: "GET",
   });
 
   if (!res.ok) {
@@ -95,4 +95,4 @@ export const getUBlobReceipt = async (id: number): Promise<UBlobReceipt> => {
   }
 
   return res.json();
-};
+}

@@ -1,9 +1,9 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Layout from './components/Layout';
-import { BlobPage } from './pages/Blob';
-import Home from './pages/Home';
-import { UBlobPage } from './pages/UBlob';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Layout from "./components/Layout";
+import BlobPage from "./pages/Blob";
+import Home from "./pages/Home";
+import UBlobPage from "./pages/UBlob";
 
 const queryClient = new QueryClient();
 
