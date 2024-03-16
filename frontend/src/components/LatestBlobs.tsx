@@ -1,4 +1,5 @@
-import useLatestBlobs from '../hooks/useLatestBlobs';
+import useLatestBlobs from "../hooks/useLatestBlobs";
+import { formatAddress } from "../utils/format";
 
 function LatestBlobs() {
   const { data: blobs } = useLatestBlobs(5);
@@ -14,15 +15,9 @@ function LatestBlobs() {
       <div className="flex flex-col gap-4">
         {blobs &&
           blobs.map((blob) => (
-            <a href={`/blob/${blob.hash}`}>
-              <div
-                key={blob.hash}
-                className="flex justify-between bg-light-violet p-4 rounded-md text-white items-center"
-              >
-                <p className="">{`0x${blob.hash.slice(
-                  0,
-                  4
-                )}...${blob.hash.slice(-4, blob.hash.length)}`}</p>
+            <a href={`/blob/${blob.hash}`} key={blob.hash}>
+              <div className="flex justify-between bg-light-violet p-4 rounded-md text-white items-center">
+                <p>{formatAddress(blob.hash, 8)}</p>
 
                 <div className="w-48 flex items-center gap-2">
                   <div className="w-full bg-gray-200 rounded h-2.5  dark:bg-gray-700">
@@ -35,7 +30,7 @@ function LatestBlobs() {
                 </div>
 
                 <div>
-                  <p>{blob.fee}</p>
+                  <p>{blob.fee} wei</p>
                 </div>
               </div>
             </a>

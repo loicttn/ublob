@@ -6,6 +6,7 @@ import { BLOB_SIZE, getUBlobSize } from "../utils/blob";
 import { keccak256 } from "viem";
 import { UBlob } from "../utils/api";
 import { Link } from "react-router-dom";
+import { formatAddress } from "../utils/format";
 
 const getBlobColor = (blob: UBlob) => {
   const color = keccak256(`0x${blob.data}`);
@@ -25,13 +26,13 @@ function BlobPage() {
   return (
     <>
       <div className="bg-light-violet rounded-md flex flex-col gap-2 p-4 text-white">
-        <h2 className="text-lg">Blob - {id}</h2>
+        <h2 className="text-lg">Blob - {formatAddress(id ?? "", 12)}</h2>
         <div className="flex flex-col text-sm">
           {isLoading && <p>Loading...</p>}
           {error && <p>Error: {error.message}</p>}
           {blob && (
             <div className="flex flex-col gap-1 text-sm">
-              <Value label="hash" value={blob.hash} />
+              <Value label="hash" value={formatAddress(blob.hash ?? "", 10)} />
               <Value label="fee" value={`${blob.fee} wei`} />
               <Value
                 label="timestamp"
@@ -81,10 +82,11 @@ function BlobPage() {
             to={`/ublob/${e.id}`}
             className="flex p-4 hover:bg-light-violet transition-colors rounded-md flex-col gap-2"
             id={e.id.toString()}
+            key={e.id}
           >
             <div className="flex flex-col gap-0.5 text-xs">
               <Value label="size" value={`${getUBlobSize(e)} bytes`} />
-              <Value label="hash" value={e.id.toString()} />
+              <Value label="hash" value={keccak256(`0x${e.id}`)} />
               <Value label="sender" value={e.sender} />
             </div>
 

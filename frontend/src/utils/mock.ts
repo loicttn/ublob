@@ -40,8 +40,8 @@ export function generateRandomUBlob(): UBlob {
   return {
     id: getRandomInt(100, 1000000),
     data: getRandomString(1000, 20000),
-    sender: getRandomString(20, 20),
-    signature: getRandomString(100, 1000),
+    sender: "0x" + getRandomString(40, 40),
+    signature: "0x" + getRandomString(64, 64),
     max_wei_per_byte: getRandomInt(1, 10),
     age_factor: getRandomFloat(1, 5),
     expiration_timestamp: getRandomInt(1000000, 10000000),
@@ -56,7 +56,7 @@ export function generateRandomUBlob(): UBlob {
  */
 export function generateRandomBlob(): Blob {
   const data = {
-    hash: getRandomString(20, 20),
+    hash: "0x" + getRandomString(64, 64),
     timestamp: getRandomInt(100000, 1000000),
     fee: getRandomInt(100, 1000),
     filled: getRandomInt(0, 100),
