@@ -1,37 +1,44 @@
-import { useEffect, useState } from 'react';
-import { Head } from '../utils/api';
-import { generateRandomHead } from '../utils/mock';
+import { BLOB_SIZE, getUBlobBid, getUBlobSize } from "../utils/blob";
+import { generateRandomHead } from "../utils/mock";
+import { useQuery } from "@tanstack/react-query";
 
-type UseFetchHeadReturn = {
-  data: Head | null;
-  loading: boolean;
-  error: string | null;
-};
+async function getPendingBids() {
+  const data = generateRandomHead();
+
+  // sort by highest bid
+  data.ublobs.sort((a, b) => getUBlobBid(b) - getUBlobBid(a));
+
+  const accepted_blobs = [];
+  const pending_blobs = [];
+
+  let acc = 0;
+  for (const blob of data.ublobs) {
+    if (acc < BLOB_SIZE) {
+      accepted_blobs.push(blob);
+    } else {
+      pending_blobs.push(blob);
+    }
+    console.log(acc);
+
+    acc += getUBlobSize(blob);
+  }
+
+  return {
+    all_blobs: data.ublobs,
+    accepted_blobs,
+    pending_blobs,
+  };
+}
 
 /**
  * Fetches the head of the ublob auction.
- * @returns {UseFetchHeadReturn} - The head of the ublob auction
  */
-export const useHead = (): UseFetchHeadReturn => {
-  const [data, setData] = useState<Head | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+export default function useHead() {
+  return useQuery({
+    queryKey: ["head"],
+    queryFn: getPendingBids,
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        // const res = await getHead();
-        const res = generateRandomHead(); // TODO: remove this once api live
-        setData(res);
-        setLoading(false);
-      } catch (error) {
-        setError((error as Error).message);
-        setLoading(false);
-      }
-    };
-
-    getData();
-  }, []);
-
-  return { data, loading, error };
-};
+    // poll every 500ms
+    refetchInterval: 500,
+  });
+}

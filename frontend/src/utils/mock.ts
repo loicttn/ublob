@@ -1,4 +1,4 @@
-import { Head, UBlob } from './api';
+import { Head, UBlob } from "./api";
 
 /**
  * Function to generate a random number between min and max.
@@ -26,7 +26,9 @@ const getRandomFloat = (min: number, max: number): number =>
  */
 const getRandomString = (min: number, max: number): string => {
   const length = getRandomInt(min, max);
-  return Math.random().toString(36).substr(2, length);
+  const arr = new Uint8Array(length);
+  window.crypto.getRandomValues(arr);
+  return arr.toString();
 };
 
 /**
@@ -35,7 +37,7 @@ const getRandomString = (min: number, max: number): string => {
  */
 export const generateRandomUBlob = (): UBlob => ({
   id: getRandomInt(1, 10000),
-  data: getRandomString(100, 20000),
+  data: getRandomString(100, 2000),
   sender: getRandomString(20, 20),
   signature: getRandomString(100, 1000),
   max_wei_per_byte: getRandomInt(1, 10),

@@ -1,3 +1,4 @@
+import BidsGraph from "../components/BidsGraph";
 import BidsList from "../components/BidsList";
 
 const BASE_FEE = 10;
@@ -25,8 +26,10 @@ function Home() {
     <>
       <Kpis />
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4 min-h-[28rem]">
         <BidsList />
+
+        <BidsGraph />
       </div>
     </>
   );
