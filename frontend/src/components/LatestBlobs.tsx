@@ -24,16 +24,14 @@ function LatestBlobs() {
                   4
                 )}...${blob.hash.slice(-4, blob.hash.length)}`}</p>
 
-                <div className="w-48">
-                  <div className="text-green-700 dark:text-green-500">
-                    {blob.filled}%
-                  </div>
-                  <div className="w-full bg-gray-200 rounded h-2.5 mb-4 dark:bg-gray-700">
+                <div className="w-48 flex items-center gap-2">
+                  <div className="w-full bg-gray-200 rounded h-2.5  dark:bg-gray-700">
                     <div
-                      className="bg-green-600 h-2.5 rounded dark:bg-green-500"
+                      className="bg-green-600 h-2.5 rounded dark:bg-emerald-500"
                       style={{ width: `${blob.filled}%` }}
                     ></div>
                   </div>
+                  <div className="text-green-500">{blob.filled}%</div>
                 </div>
 
                 <div>
