@@ -110,6 +110,7 @@ type blobinous struct {
 
 type Tx struct {
 	tx        *geth_types.Transaction
+	Size      uint64
 	blobinous []blobinous
 	blobHash  common.Hash
 }
@@ -155,7 +156,10 @@ func (e *UBlobEngine) startCoreLoop(ctx context.Context, cancel context.CancelFu
 
 						if receipt != nil {
 							receipt, err := e.Relay.DB.CreateBlobReceipts(&types.BlobReceipt{
-								BlobHash: pending.blobHash[:],
+								BlobHash:     pending.blobHash,
+								BlobGasPrice: receipt.BlobGasPrice.String(),
+								Size:         pending.Size,
+								Timestamp:    uint64(pending.tx.Time().Unix()),
 							})
 							if err != nil {
 								log.Warnf("error creating blob receipt: %v", err)
@@ -320,15 +324,16 @@ func (e *UBlobEngine) startCoreLoop(ctx context.Context, cancel context.CancelFu
 			blobHashes := sideCar.BlobHashes()
 
 			currentTx.blobHash = blobHashes[0]
+			currentTx.Size = uint64(len(raw_payload))
 
 			// doubleGasFee := big.NewInt(0).Mul(gasFeeCap, big.NewInt(10))
 			// doubleGasTip := big.NewInt(0).Mul(gasTipCap, big.NewInt(10))
 
 			tx := geth_types.NewTx(&geth_types.BlobTx{
-				ChainID:    uint256.MustFromBig(chainID),
-				Nonce:      proposerNonce,
-				GasTipCap:  uint256.MustFromBig(gasTipCap),
-				GasFeeCap:  uint256.MustFromBig(gasFeeCap),
+				ChainID:   uint256.MustFromBig(chainID),
+				Nonce:     proposerNonce,
+				GasTipCap: uint256.MustFromBig(gasTipCap),
+				GasFeeCap: uint256.MustFromBig(gasFeeCap),
 				// GasTipCap:  uint256.MustFromBig(doubleGasTip),
 				// GasFeeCap:  uint256.MustFromBig(doubleGasFee),
 				Gas:        21000,

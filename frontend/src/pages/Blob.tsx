@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 import { formatAddress } from "../utils/format";
 
 const getBlobColor = (blob: UBlob) => {
-  const color = keccak256(`0x${blob.data}`);
+  const color = keccak256(`0x${blob.Data}`);
   const background = `rgba(${parseInt(color.slice(2, 4), 16)}, ${parseInt(
     color.slice(4, 6),
     16
@@ -18,26 +18,29 @@ const getBlobColor = (blob: UBlob) => {
 };
 
 function BlobPage() {
-  const { id } = useParams();
-  const { isLoading, data: blob, error } = useBlob(1);
+  const { hash } = useParams();
+  const { isLoading, data, error } = useBlob(hash!);
 
   const [ref, { width }] = useMeasure();
+
+  const blob = data?.ublob;
+  console.log(blob);
 
   return (
     <>
       <div className="bg-light-violet rounded-md flex flex-col gap-2 p-4 text-white">
-        <h2 className="text-lg">Blob - {formatAddress(id ?? "", 12)}</h2>
+        <h2 className="text-lg">Blob - {formatAddress(hash ?? "", 12)}</h2>
         <div className="flex flex-col text-sm">
           {isLoading && <p>Loading...</p>}
           {error && <p>Error: {error.message}</p>}
           {blob && (
             <div className="flex flex-col gap-1 text-sm">
-              <Value label="hash" value={formatAddress(blob.hash ?? "", 10)} />
-              <Value label="fee" value={`${blob.fee} wei`} />
               <Value
-                label="timestamp"
-                value={new Date(blob.timestamp).toLocaleString()}
+                label="hash"
+                value={formatAddress(blob.BlobHash ?? "", 10)}
               />
+              <Value label="fee" value={`${blob.BlobGasPrice} wei`} />
+              <Value label="size" value={`${blob.Size} bytes`} />
             </div>
           )}
         </div>
@@ -47,18 +50,19 @@ function BlobPage() {
         className="w-full flex gap-x-1 p-1 bg-light-violet rounded-md h-28"
         ref={ref}
       >
-        {blob?.ublobs.map((e) => {
+        {blob?.UBlobReceipts!.map((e) => {
           const blob_width =
             Math.floor(
-              (getUBlobSize(e) * ((width ?? 0) - 4 * blob.ublobs.length)) /
+              (getUBlobSize(e.Blob) *
+                ((width ?? 0) - 4 * blob.UBlobReceipts!.length)) /
                 BLOB_SIZE
             ) + "px";
-          const background = getBlobColor(e);
+          const background = getBlobColor(e.Blob);
 
           return (
             <a
-              href={"#" + e.id}
-              key={e.id}
+              href={"#" + e.ID}
+              key={e.ID}
               className="text-xs rounded-sm flex items-center justify-center transition-colors truncate hover:![--opacity:0.8] text-white"
               style={
                 {
@@ -68,7 +72,7 @@ function BlobPage() {
                 } as React.CSSProperties
               }
             >
-              {e.id}
+              {e.ID}
             </a>
           );
         })}
@@ -77,17 +81,17 @@ function BlobPage() {
       <h2 className="text-xl text-white mt-10">&micro;Blobs</h2>
 
       <div className="flex flex-col gap-8 -mx-4">
-        {blob?.ublobs.map((e) => (
+        {blob?.UBlobReceipts!.map((e) => (
           <Link
-            to={`/ublob/${e.id}`}
+            to={`/ublob/${blob.BlobHash}/${e.ID}`}
             className="flex p-4 hover:bg-light-violet transition-colors rounded-md flex-col gap-2"
-            id={e.id.toString()}
-            key={e.id}
+            id={e.ID.toString()}
+            key={e.ID}
           >
             <div className="flex flex-col gap-0.5 text-xs">
-              <Value label="size" value={`${getUBlobSize(e)} bytes`} />
-              <Value label="hash" value={keccak256(`0x${e.id}`)} />
-              <Value label="sender" value={e.sender} />
+              <Value label="size" value={`${getUBlobSize(e.Blob)} bytes`} />
+              <Value label="hash" value={keccak256(`0x${e.ID}`)} />
+              <Value label="sender" value={e.Blob.Sender} />
             </div>
 
             <div
@@ -95,11 +99,11 @@ function BlobPage() {
               style={
                 {
                   "--opacity": "0.5",
-                  backgroundColor: getBlobColor(e),
+                  backgroundColor: getBlobColor(e.Blob),
                 } as React.CSSProperties
               }
             >
-              {e.data.substring(0, 100)}...
+              {e.Blob.Data.substring(0, 100)}...
             </div>
           </Link>
         ))}

@@ -4,7 +4,7 @@
 while true; do
     # Generate a random size between 1KB and 10KB (1024 to 10240 bytes)
     # Then, since each hex character represents half a byte, divide by 2 to get the number of hex characters
-    size=$((RANDOM % (10240 - 1024 + 1) + 1024))
+    size=$((RANDOM % (30240 - 1024 + 1) + 10000))
     hexSize=$(($size / 2))
 
     # Generate a random hex string of the calculated size
@@ -27,7 +27,7 @@ EOF
     curl -X POST "http://localhost:8080/ublob" -H "Content-Type: application/json" -d "$payload"
 
     # Generate a random sleep duration between 1 and 5 seconds
-    sleepTime=$((RANDOM % 5 + 1))
+    sleepTime=$((RANDOM % 10 + 1))
 
     # Sleep for the random duration before the next iteration
     sleep $sleepTime

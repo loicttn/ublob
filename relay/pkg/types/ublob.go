@@ -32,8 +32,11 @@ type UBlob struct {
 }
 
 type BlobReceipt struct {
-	ID       uint
-	BlobHash []byte
+	ID           uint
+	BlobHash     common.Hash
+	BlobGasPrice string
+	Size         uint64
+	Timestamp    uint64
 
 	UBlobReceipts []*UBlobReceipt `gorm:"foreignKey:BlobReceiptID"`
 }

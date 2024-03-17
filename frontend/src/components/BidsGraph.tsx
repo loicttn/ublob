@@ -25,6 +25,10 @@ function BidsGraph() {
         nameTextStyle: { color: "#B7ACDF" },
         nameLocation: "middle",
         type: "value",
+        min:
+          [...(data?.all_blobs ?? [])].sort(
+            (a, b) => a.CreationTimestamp - b.CreationTimestamp
+          )[0]?.CreationTimestamp - 10,
         axisTick: { show: true },
         axisLabel: { show: false },
         splitLine: { show: false },
@@ -48,9 +52,9 @@ function BidsGraph() {
           symbolSize: getSize,
           color: "rgb(16,185,129)",
           data: data?.accepted_blobs.map((blob) => [
-            blob.creation_timestamp,
+            blob.CreationTimestamp,
             getUBlobBidWei(blob),
-            blob.id,
+            blob.ID,
             "toot",
           ]),
         },
@@ -61,9 +65,9 @@ function BidsGraph() {
           color: "#B7ACDF",
           symbolSize: getSize,
           data: data?.pending_blobs.map((blob) => [
-            blob.creation_timestamp,
+            blob.CreationTimestamp,
             getUBlobBidWei(blob),
-            blob.id,
+            blob.ID,
             "toot",
           ]),
         },

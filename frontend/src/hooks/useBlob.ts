@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { generateRandomBlob } from "../utils/mock";
+import { getUBlob } from "../utils/api";
 
 /**
  * Fetches a specific ublob.
  */
-export default function useUBlob(id: number) {
+export default function useBlob(hash: string) {
   return useQuery({
-    queryKey: ["ublob", id],
-    queryFn: () => generateRandomBlob(/** id */),
+    queryKey: ["ublob", hash],
+    queryFn: () => getUBlob(hash),
   });
 }

@@ -14,8 +14,8 @@ function App() {
         <Routes>
           <Route Component={Layout}>
             <Route path="/" Component={Home} />
-            <Route path="/ublob/:id" Component={UBlobPage} />
-            <Route path="/blob/:id" Component={BlobPage} />
+            <Route path="/ublob/:hash/:id" Component={UBlobPage} />
+            <Route path="/blob/:hash" Component={BlobPage} />
           </Route>
         </Routes>
       </BrowserRouter>

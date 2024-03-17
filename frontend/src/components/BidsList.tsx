@@ -4,7 +4,6 @@ import useHead from "../hooks/useHead";
 import { UBlob } from "../utils/api";
 import { getUBlobBidWei } from "../utils/blob";
 import { formatAddress } from "../utils/format";
-import { Link } from "react-router-dom";
 
 function BidsList() {
   const { data } = useHead();
@@ -42,23 +41,22 @@ function BidsList() {
         <div ref={ref} className="invisible" />
 
         {accepted_blobs.map((ublob) => (
-          <Link to={`/ublob/${ublob.id}`} key={ublob.id}>
-            <motion.div
-              layoutId={ublob.id.toString()}
-              style={{ width: getWidth(ublob) }}
-              className="grid grid-cols-[120px_100px_auto] px-3 py-2 border border-l-2 border-l-emerald-500 border-purple text-xs"
-            >
-              <p>
-                <span className="text-white">{ublob.data.length}</span>{" "}
-                <span className="text-light-purple">bytes</span>
-              </p>
-              <p className="text-white">{formatAddress(ublob.sender)}</p>
-              <p className="text-right">
-                <span className="text-white">{getUBlobBidWei(ublob)}</span>{" "}
-                <span className="text-light-purple">wei</span>
-              </p>
-            </motion.div>
-          </Link>
+          <motion.div
+            key={ublob.ID}
+            layoutId={ublob.ID.toString()}
+            style={{ width: getWidth(ublob) }}
+            className="grid grid-cols-[120px_100px_auto] px-3 py-2 border border-l-2 border-l-emerald-500 border-purple text-xs"
+          >
+            <p>
+              <span className="text-white">{ublob.Data.length}</span>{" "}
+              <span className="text-light-purple">bytes</span>
+            </p>
+            <p className="text-white">{formatAddress(ublob.Sender)}</p>
+            <p className="text-right">
+              <span className="text-white">{getUBlobBidWei(ublob)}</span>{" "}
+              <span className="text-light-purple">wei</span>
+            </p>
+          </motion.div>
         ))}
 
         {show_base_fee && (
@@ -70,23 +68,22 @@ function BidsList() {
         )}
 
         {pending_blobs.map((ublob) => (
-          <a href={`/ublob/${ublob.id}`} key={ublob.id}>
-            <motion.div
-              layoutId={ublob.id.toString()}
-              style={{ width: getWidth(ublob) }}
-              className="grid grid-cols-[120px_100px_auto] px-3 py-2 border border-purple text-xs"
-            >
-              <p>
-                <span className="text-white">{ublob.data.length}</span>{" "}
-                <span className="text-light-purple">bytes</span>
-              </p>
-              <p className="text-white">{formatAddress(ublob.sender)}</p>
-              <p className="text-right">
-                <span className="text-white">{getUBlobBidWei(ublob)}</span>{" "}
-                <span className="text-light-purple">wei</span>
-              </p>
-            </motion.div>
-          </a>
+          <motion.div
+            key={ublob.ID}
+            layoutId={ublob.ID.toString()}
+            style={{ width: getWidth(ublob) }}
+            className="grid grid-cols-[120px_100px_auto] px-3 py-2 border border-purple text-xs"
+          >
+            <p>
+              <span className="text-white">{ublob.Data.length}</span>{" "}
+              <span className="text-light-purple">bytes</span>
+            </p>
+            <p className="text-white">{formatAddress(ublob.Sender)}</p>
+            <p className="text-right">
+              <span className="text-white">{getUBlobBidWei(ublob)}</span>{" "}
+              <span className="text-light-purple">wei</span>
+            </p>
+          </motion.div>
         ))}
       </div>
     </div>

@@ -1,13 +1,9 @@
+import { getHead } from "../utils/api";
 import { BLOB_SIZE, getUBlobBidWei, getUBlobSize } from "../utils/blob";
-import { generateRandomHead, getRandomString } from "../utils/mock";
 import { useQuery } from "@tanstack/react-query";
 
-const data = generateRandomHead();
-
 async function getPendingBids() {
-  for (let i = 0; i < data.ublobs.length; i++) {
-    data.ublobs[i].data = getRandomString(1000, 20000);
-  }
+  const data = await getHead();
 
   // sort by highest bid
   data.ublobs.sort((a, b) => getUBlobBidWei(b) - getUBlobBidWei(a));
@@ -47,6 +43,6 @@ export default function useHead() {
     queryFn: getPendingBids,
 
     // poll every 500ms
-    refetchInterval: 2000,
+    refetchInterval: 500,
   });
 }

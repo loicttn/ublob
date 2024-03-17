@@ -1,6 +1,6 @@
 /*-------------------------------- CONSTANTS --------------------------------*/
 
-const API = "http://localhost:8000/api";
+const API = "http://localhost:8080";
 
 /*--------------------------------- ERRORS ----------------------------------*/
 
@@ -14,31 +14,38 @@ class NetworkError extends Error {
 /*-------------------------------- API TYPES --------------------------------*/
 
 export type Blob = {
-  ublobs: UBlob[];
-  hash: string;
-  timestamp: number;
-  fee: number;
-  filled: number; // out of 100%
+  ID: number;
+  BlobHash: string;
+  BlobGasPrice: string;
+  Size: number;
+  Timestamp: number;
+  UBlobReceipts: UBlobReceipt[] | null;
+};
+
+export type Blobs = {
+  blobs: Blob[];
 };
 
 export type UBlob = {
-  id: number;
-  data: string;
-  sender: string;
-  signature: string;
-  max_wei_per_byte: number;
-  age_factor: number;
-  expiration_timestamp: number;
-  creation_timestamp: number;
-  creation_block_number: number;
+  ID: number;
+  Data: string;
+  Sender: string;
+  Signature: string;
+  MaxWeiPerByte: string;
+  AgeFactor: number;
+  ExpirationTimestamp: number;
+  CreationTimestamp: number;
+  CreationBlockNumber: number;
+  UBlobReceiptID: number;
+  UBlobReceipt: UBlobReceipt;
 };
 
 export type UBlobReceipt = {
-  id: number;
-  offset: number;
-  size: number;
-  blobID: number;
-  blobReceiptID: number;
+  Blob: UBlob;
+  BlobReceiptID: number;
+  ID: number;
+  Offset: number;
+  Size: number;
 };
 
 export type Head = {
@@ -52,7 +59,7 @@ export type Head = {
  * @returns {Promise<Head>} - The head of the ublob auction
  */
 export async function getHead(): Promise<Head> {
-  const res = await fetch(`${API}/v1/head`, {
+  const res = await fetch(`${API}/ublobs`, {
     method: "GET",
   });
 
@@ -64,12 +71,23 @@ export async function getHead(): Promise<Head> {
 }
 
 /**
- * Fetches the ublob with the given id.
- * @param id ublob id
- * @returns {Promise<UBlob>} - The ublob with the given id
+ * Fetches the head of the ublob auction.
+ * @returns {Promise<Head>} - The head of the ublob auction
  */
-export async function getUBlob(id: number): Promise<UBlob> {
-  const res = await fetch(`${API}/v1/ublob/${id}`, {
+export async function getLatestBlobs(): Promise<Blobs> {
+  const res = await fetch(`${API}/blobs`, {
+    method: "GET",
+  });
+
+  if (!res.ok) {
+    throw new NetworkError(`Failed to fetch head: ${res.status}`);
+  }
+
+  return res.json();
+}
+
+export async function getUBlob(hash: string): Promise<{ ublob: Blob }> {
+  const res = await fetch(`${API}/ublobs/${hash}`, {
     method: "GET",
   });
 
